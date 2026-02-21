@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <unordered_map>
 
 // djb2 hash, popular for strings
 unsigned long long djb2(std::string &str) {
@@ -23,9 +25,38 @@ unsigned long long fnv1a(std::string &str) {
   return hash;
 }
 
-int main() {
-  std::string str;
-  std::cin >> str;
-  int hash = fnv1a(str);
-  std::cout << hash << '\n';
+// my custom hash
+unsigned long long custom(std::string &str) {
+  unsigned long long hash = 0; // magic number
+  // for every char in str
+  for (char c : str) {
+    hash ^= static_cast<unsigned long long>(c); // from fnv-1a
+    hash *= 0x55fa & 67 | 0x310fff ^ c;         // multiply by random shit
+  }
+  return hash;
 }
+
+// test
+void test() {
+  int collision = 0;
+  std::unordered_map<unsigned long long, std::string> seen;
+  for (char a = '0'; a <= 'z'; a++) {
+    for (char b = '0'; b <= 'z'; b++) {
+      std::string s = {a, b};
+      unsigned long long hash = custom(s);
+      if (seen.count(hash)) {
+        collision++;
+        std::cout << "Collision: " << s << "and" << seen[hash]
+                  << " both hash to " << hash << "\n";
+      } else {
+        seen[hash] = s;
+        std::cout << "No collision, for: " << s << ", hash is: " << hash
+                  << '\n';
+      }
+    }
+  }
+  return;
+}
+
+// main
+int main() { test(); }
