@@ -31,7 +31,7 @@ unsigned long long custom(std::string &str) {
   // for every char in str
   for (char c : str) {
     hash ^= static_cast<unsigned long long>(c); // from fnv-1a
-    hash *= 0x55fa & 67 | 0x310fff ^ c;         // multiply by random shit
+    hash *= 0x55fa & 67 | 0x310fff ^ c;         // multiply by random number
   }
   return hash;
 }
@@ -46,12 +46,12 @@ void test() {
       unsigned long long hash = custom(s);
       if (seen.count(hash)) {
         collision++;
-        std::cout << "Collision: " << s << "and" << seen[hash]
+        std::cout << "Collision: " << s << " and " << seen[hash]
                   << " both hash to " << hash << "\n";
       } else {
         seen[hash] = s;
-        std::cout << "No collision, for: " << s << ", hash is: " << hash
-                  << '\n';
+        // std::cout << "No collision, for: " << s << ", hash is: " << hash <<
+        // '\n';
       }
     }
   }
